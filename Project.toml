@@ -1,0 +1,13 @@
+name = "CESFunctions"
+uuid = "41fc9631-8896-47d9-8244-cfbf74589b0a"
+authors = ["Tamás K. Papp <tkpapp@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+
+[compat]
+julia = "1.8"
+ArgCheck = "2"
+DocStringExtensions = "0.9"
