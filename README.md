@@ -6,8 +6,7 @@
 <!--
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://tpapp.github.io/CESFunctions.jl/stable)
 [![Documentation](https://img.shields.io/badge/docs-master-blue.svg)](https://tpapp.github.io/CESFunctions.jl/dev)
--->
-[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
+-->[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 
 Tiny Julia package to implement CES (constant elasticity of substitution) functions, used in economics.
 
