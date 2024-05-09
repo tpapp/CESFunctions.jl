@@ -8,6 +8,13 @@ export CESProduction, output_quantity, output_price, input_demands
 using ArgCheck: @argcheck
 using DocStringExtensions: SIGNATURES
 
+"""
+NTuple with at least one element, having a total of `Nm1+1` elements.
+
+This is a workaround for ambiguities with empty tuples.
+"""
+const NTuple1{Nm1,T} = Tuple{T,Vararg{T,Nm1}}
+
 struct CESProduction{N,T}
     "elasticity of substitution"
     σ::T
@@ -32,7 +39,8 @@ end
 """
 $(SIGNATURES)
 """
-function output_quantity(F::CESProduction{N}, inputs::NTuple{N,S}) where {N,S<:Real}
+function output_quantity(F::CESProduction{N}, inputs::NTuple1{Nm1,S}) where {N,Nm1,S<:Real}
+    @argcheck N == Nm1 + 1 "Incompatible dimensions."
     (; σ, A) = F
     ρ = (σ - 1) / σ
     mapreduce((a, x) -> a * x^ρ, +, A, inputs)^(1/ρ)
@@ -41,7 +49,8 @@ end
 """
 $(SIGNATURES)
 """
-function output_price(F::CESProduction{N}, input_prices::NTuple{N,S}) where {N,S<:Real}
+function output_price(F::CESProduction{N}, input_prices::NTuple1{Nm1,S}) where {N,Nm1,S<:Real}
+    @argcheck N == Nm1 + 1 "Incompatible dimensions."
     (; σ, A) = F
     mapreduce((a, p) -> a^σ * p^(1-σ), +, A, input_prices)^(1/(1-σ))
 end
@@ -49,8 +58,9 @@ end
 """
 $(SIGNATURES)
 """
-function input_demands(F::CESProduction{N}, input_prices::NTuple{N,S}, output_quantity::T1,
-                       output_price::T2 = output_price(F, input_prices)) where {N,S<:Real,T1<:Real,T2<:Real}
+function input_demands(F::CESProduction{N}, input_prices::NTuple1{Nm1,S}, output_quantity::T1,
+                       output_price::T2 = output_price(F, input_prices)) where {N,Nm1,S<:Real,T1<:Real,T2<:Real}
+    @argcheck N == Nm1 + 1 "Incompatible dimensions."
     (; σ, A) = F
     map((a, p) -> (output_price * a / p)^σ * output_quantity, A, input_prices)
 end
