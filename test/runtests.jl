@@ -11,18 +11,24 @@ end
     σ = 0.3
     a1 = 0.1
     a2 = 0.9
-    F = CESProduction(σ, (a1, a2))
+    F = @inferred CESProduction(σ, (a1, a2))
+    @test F ≡ @inferred CESProduction(σ, SVector(a1, a2))
     L1 = 0.7
     L2 = 0.8
     ρ = (σ - 1) / σ
     Y = @inferred(output_quantity(F, (L1, L2)))
     @test Y ≈ (a1 * L1^ρ + a2 * L2^ρ)^(1/ρ)
+    @test Y ≡ @inferred output_quantity(F, SVector(L1, L2))
     p1 = 0.3
     p2 = 0.5
     P = @inferred(output_price(F, (p1, p2)))
     @test P ≈ (a1^σ * p1^(1-σ) + a2^σ * p2^(1-σ))^(1/(1-σ))
-    @test SVector(input_demands(F, (p1, p2), Y)) ≈ SVector((P * a1 / p1)^σ * Y, (P * a2 / p2)^σ * Y)
-    @test SVector(input_demands(F, (p1, p2), Y)) ==  SVector(input_demands(F, (p1, p2), Y, P))
+    @test SVector(input_demands(F, (p1, p2), Y)) ≈
+        SVector((P * a1 / p1)^σ * Y, (P * a2 / p2)^σ * Y)
+    @test @inferred(SVector(input_demands(F, (p1, p2), Y))) ==
+        @inferred(SVector(input_demands(F, (p1, p2), Y, P))) ==
+        @inferred(input_demands(F, SVector(p1, p2), Y)) ==
+        @inferred(input_demands(F, SVector(p1, p2), Y, P))
 end
 
 using JET

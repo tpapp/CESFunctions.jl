@@ -7,6 +7,7 @@ export CESProduction, output_quantity, output_price, input_demands
 
 using ArgCheck: @argcheck
 using DocStringExtensions: SIGNATURES
+using StaticArrays: SVector
 
 """
 NTuple with at least one element, having a total of `Nm1+1` elements.
@@ -36,6 +37,8 @@ function CESProduction(σ::Real, A::NTuple)
     CESProduction(σp, Ap)
 end
 
+CESProduction(σ, A::SVector) = CESProduction(σ, Tuple(A))
+
 """
 $(SIGNATURES)
 """
@@ -45,6 +48,8 @@ function output_quantity(F::CESProduction{N}, inputs::NTuple1{Nm1,S}) where {N,N
     ρ = (σ - 1) / σ
     mapreduce((a, x) -> a * x^ρ, +, A, inputs)^(1/ρ)
 end
+
+output_quantity(F::CESProduction, inputs::SVector) = output_quantity(F, Tuple(inputs))
 
 """
 $(SIGNATURES)
@@ -63,6 +68,11 @@ function input_demands(F::CESProduction{N}, input_prices::NTuple1{Nm1,S}, output
     @argcheck N == Nm1 + 1 "Incompatible dimensions."
     (; σ, A) = F
     map((a, p) -> (output_price * a / p)^σ * output_quantity, A, input_prices)
+end
+
+function input_demands(F::CESProduction, input_prices::SVector, output_quantity,
+                       rest...)
+    SVector(input_demands(F, Tuple(input_prices), output_quantity, rest...))
 end
 
 end # module
