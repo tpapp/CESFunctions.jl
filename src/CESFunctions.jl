@@ -32,6 +32,8 @@ struct CESProduction{N,T}
     where ``σ``, the *elasticity of substitution*, is required to be positive.
 
     Alternative parametrizations use a substitution parameter ``ρ = (σ - 1)/σ``.
+
+    Fields `σ` and `A` of the result are part of the public API.
     """
     function CESProduction(σ::T, A::NTuple{N,T}) where {N,T<:Real}
         @argcheck N > 0
