@@ -10,10 +10,10 @@ using DocStringExtensions: SIGNATURES
 using StaticArrays: SVector
 
 """
-NTuple with at least one element, having a total of `Nm1+1` elements.
-
-This is a workaround for ambiguities with empty tuples.
+Argument type with statically known length.
 """
+const StaticN{N} = Union{NTuple{N},SVector{N}}
+
 const NTuple1{Nm1,T} = Tuple{T,Vararg{T,Nm1}}
 
 struct CESProduction{N,T}
@@ -22,6 +22,16 @@ struct CESProduction{N,T}
     "share parameters, >0, sum to 1"
     A::NTuple{N,T}
     @doc """
+    $(SIGNATURES)
+
+    A constant elasticity of substitution production function of the form
+
+    ```math
+    Y = (A_1 X_2^{(σ-1)/σ} + A_2 X_2^{(σ-1)/σ} + ...)^{σ/(σ-1)}
+    ```
+    where ``σ``, the *elasticity of substitution*, is required to be positive.
+
+    Alternative parametrizations use a substitution parameter ``ρ = (σ - 1)/σ``.
     """
     function CESProduction(σ::T, A::NTuple{N,T}) where {N,T<:Real}
         @argcheck N > 0
@@ -41,38 +51,36 @@ CESProduction(σ, A::SVector) = CESProduction(σ, Tuple(A))
 
 """
 $(SIGNATURES)
+
+Calculate the output quantity from inputs (`Tuple` or `SVector`).
 """
-function output_quantity(F::CESProduction{N}, inputs::NTuple1{Nm1,S}) where {N,Nm1,S<:Real}
-    @argcheck N == Nm1 + 1 "Incompatible dimensions."
+function output_quantity(F::CESProduction{N}, inputs::StaticN{N}) where N
     (; σ, A) = F
     ρ = (σ - 1) / σ
     mapreduce((a, x) -> a * x^ρ, +, A, inputs)^(1/ρ)
 end
 
-output_quantity(F::CESProduction, inputs::SVector) = output_quantity(F, Tuple(inputs))
-
 """
 $(SIGNATURES)
+
+Calculate the output price from input prices (`Tuple` or `SVector`).
 """
-function output_price(F::CESProduction{N}, input_prices::NTuple1{Nm1,S}) where {N,Nm1,S<:Real}
-    @argcheck N == Nm1 + 1 "Incompatible dimensions."
+function output_price(F::CESProduction{N}, input_prices::StaticN{N}) where N
     (; σ, A) = F
     mapreduce((a, p) -> a^σ * p^(1-σ), +, A, input_prices)^(1/(1-σ))
 end
 
 """
 $(SIGNATURES)
+
+Calculate the input demands from input prices (`Tuple` or `SVector`) and the output
+quantity. The `output_price` can be provided for faster calculations, otherwise is
+calculated.
 """
-function input_demands(F::CESProduction{N}, input_prices::NTuple1{Nm1,S}, output_quantity::T1,
-                       output_price::T2 = output_price(F, input_prices)) where {N,Nm1,S<:Real,T1<:Real,T2<:Real}
-    @argcheck N == Nm1 + 1 "Incompatible dimensions."
+function input_demands(F::CESProduction{N}, input_prices::StaticN{N}, output_quantity::Real,
+                       output_price::Real = output_price(F, input_prices)) where N
     (; σ, A) = F
     map((a, p) -> (output_price * a / p)^σ * output_quantity, A, input_prices)
-end
-
-function input_demands(F::CESProduction, input_prices::SVector, output_quantity,
-                       rest...)
-    SVector(input_demands(F, Tuple(input_prices), output_quantity, rest...))
 end
 
 end # module
