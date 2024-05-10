@@ -14,11 +14,9 @@ using DocStringExtensions: SIGNATURES, EXPORTS, README
 using StaticArrays: SVector
 
 """
-Argument type with statically known length.
+Argument type with statically known length. Used internally.
 """
 const StaticN{N} = Union{NTuple{N},SVector{N}}
-
-const NTuple1{Nm1,T} = Tuple{T,Vararg{T,Nm1}}
 
 struct CESProduction{N,T}
     "elasticity of substitution"
