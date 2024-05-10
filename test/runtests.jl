@@ -12,6 +12,8 @@ end
     a1 = 0.1
     a2 = 0.9
     F = @inferred CESProduction(σ, (a1, a2))
+    @test length(F) == 2
+    @test length(typeof(F)) == 2
     @test F ≡ @inferred CESProduction(σ, SVector(a1, a2))
     L1 = 0.7
     L2 = 0.8

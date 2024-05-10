@@ -1,16 +1,16 @@
 """
-$(README)
+$(DocStringExtensions.README)
 
 # The API
 
-$(EXPORTS)
+$(DocStringExtensions.EXPORTS)
 """
 module CESFunctions
 
 export CESProduction, output_quantity, output_price, input_demands
 
 using ArgCheck: @argcheck
-using DocStringExtensions: SIGNATURES, EXPORTS, README
+using DocStringExtensions: SIGNATURES, DocStringExtensions
 using StaticArrays: SVector
 
 """
@@ -35,7 +35,22 @@ struct CESProduction{N,T}
 
     Alternative parametrizations use a substitution parameter ``ρ = (σ - 1)/σ``.
 
+    # About the type
+
     Fields `σ` and `A` of the result are part of the public API.
+
+    `Base.length` can be used to query the length on both values and types.
+
+    ```jldoctest
+    julia> F = CESProduction(0.1, (0.2, 0.8))
+    CESProduction{2, Float64}(0.1, (0.2, 0.8))
+
+    julia> length(F)
+    2
+
+    julia> length(typeof(F))
+    2
+    ```
     """
     function CESProduction(σ::T, A::NTuple{N,T}) where {N,T<:Real}
         @argcheck N > 0
@@ -52,6 +67,10 @@ function CESProduction(σ::Real, A::NTuple)
 end
 
 CESProduction(σ, A::SVector) = CESProduction(σ, Tuple(A))
+
+Base.length(::CESProduction{N}) where N = N
+
+Base.length(::Type{<:CESProduction{N}}) where N = N
 
 """
 $(SIGNATURES)
