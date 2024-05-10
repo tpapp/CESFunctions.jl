@@ -1,12 +1,16 @@
 """
-FIXME Placeholder for a short summary about CESFunctions.
+$(README)
+
+# The API
+
+$(EXPORTS)
 """
 module CESFunctions
 
 export CESProduction, output_quantity, output_price, input_demands
 
 using ArgCheck: @argcheck
-using DocStringExtensions: SIGNATURES
+using DocStringExtensions: SIGNATURES, EXPORTS, README
 using StaticArrays: SVector
 
 """
