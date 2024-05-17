@@ -1,7 +1,7 @@
 name = "CESFunctions"
 uuid = "41fc9631-8896-47d9-8244-cfbf74589b0a"
 authors = ["Tamás K. Papp <tkpapp@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
